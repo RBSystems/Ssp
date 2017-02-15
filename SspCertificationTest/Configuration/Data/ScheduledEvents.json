@@ -1,0 +1,36 @@
+{
+  "ScheduledEvents": [
+    {
+      "EventName": "Nightly Shutdown",
+      "SelectedDays": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "Hour": 10,
+      "Minute": 0,
+      "IsAm": false,
+      "PresetNumber" : 2
+    },
+    {
+      "EventName": "Weekly Update Meeting",
+      "SelectedDays": [
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false
+      ],
+      "Hour": 10,
+      "Minute": 0,
+      "IsAm": false,
+      "PresetNumber" : 2
+    }
+  ]
+}

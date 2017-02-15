@@ -1,0 +1,16 @@
+C:\Users\pkopysci\Documents\Visual Studio 2008\Projects\SspCertificationTest\SspCertificationTest\bin\Debug\SspCertificationTest.dll
+C:\Users\pkopysci\Documents\Visual Studio 2008\Projects\SspCertificationTest\SspCertificationTest\bin\Debug\SspCertificationTest.pdb
+C:\Users\pkopysci\Documents\Visual Studio 2008\Projects\SspCertificationTest\SspCertificationTest\bin\Debug\Crestron.SimplSharpPro.DeviceSupport.dll
+C:\Users\pkopysci\Documents\Visual Studio 2008\Projects\SspCertificationTest\SspCertificationTest\bin\Debug\Crestron.SimplSharpPro.DM.dll
+C:\Users\pkopysci\Documents\Visual Studio 2008\Projects\SspCertificationTest\SspCertificationTest\bin\Debug\Crestron.SimplSharpPro.Gateways.dll
+C:\Users\pkopysci\Documents\Visual Studio 2008\Projects\SspCertificationTest\SspCertificationTest\bin\Debug\Crestron.SimplSharpPro.Lighting.dll
+C:\Users\pkopysci\Documents\Visual Studio 2008\Projects\SspCertificationTest\SspCertificationTest\bin\Debug\Crestron.SimplSharpPro.UI.dll
+C:\Users\pkopysci\Documents\Visual Studio 2008\Projects\SspCertificationTest\SspCertificationTest\bin\Debug\SimplSharpCustomAttributesInterface.dll
+C:\Users\pkopysci\Documents\Visual Studio 2008\Projects\SspCertificationTest\SspCertificationTest\bin\Debug\SimplSharpHelperInterface.dll
+C:\Users\pkopysci\Documents\Visual Studio 2008\Projects\SspCertificationTest\SspCertificationTest\bin\Debug\SimplSharpNewtonsoft.dll
+C:\Users\pkopysci\Documents\Visual Studio 2008\Projects\SspCertificationTest\SspCertificationTest\bin\Debug\SimplSharpPro.exe
+C:\Users\pkopysci\Documents\Visual Studio 2008\Projects\SspCertificationTest\SspCertificationTest\bin\Debug\SimplSharpSQLHelperInterface.dll
+C:\Users\pkopysci\Documents\Visual Studio 2008\Projects\SspCertificationTest\SspCertificationTest\bin\Debug\SimplSharpReflectionInterface.dll
+C:\Users\pkopysci\Documents\Visual Studio 2008\Projects\SspCertificationTest\SspCertificationTest\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\pkopysci\Documents\Visual Studio 2008\Projects\SspCertificationTest\SspCertificationTest\obj\Debug\SspCertificationTest.dll
+C:\Users\pkopysci\Documents\Visual Studio 2008\Projects\SspCertificationTest\SspCertificationTest\obj\Debug\SspCertificationTest.pdb

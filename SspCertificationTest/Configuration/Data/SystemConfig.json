@@ -1,0 +1,145 @@
+{
+  "RoomInfo": {
+    "RoomName": "SSP Test Room",
+    "GuId": 10,
+    "FusionIpId": 11,
+    "Capacity": 30
+  },
+  "AvSwitcher": {
+    "Library": "Crestron.SimplSharpPro.DM.dll",
+    "ClassName": "Crestron.SimplSharpPro.DM.DmMd8x8",
+    "IpId": 42,
+    "FusionIpId": 12,
+    "GuId": 11,
+    "IsConfigurable": true,
+    "InputCards": [
+      {
+        "ClassName": "Crestron.SimplSharpPro.DM.Cards.Dmc4kHd",
+        "SlotNumber": 1
+      },
+      {
+        "ClassName": "Crestron.SimplSharpPro.DM.Cards.Dmc4kHd",
+        "SlotNumber": 2
+      },
+      {
+        "ClassName": "Crestron.SimplSharpPro.DM.Cards.DmcC",
+        "SlotNumber": 3
+      },
+      {
+        "ClassName": "Crestron.SimplSharpPro.DM.Cards.DmcC",
+        "SlotNumber": 4
+      }
+    ],
+    "OutputCards": [
+      {
+        "ClassName": "Crestron.SimplSharpPro.DM.Cards.Dmco55",
+        "SlotNumber": 1
+      },
+      {
+        "ClassName": "Crestron.SimplSharpPro.DM.Cards.Dmco55",
+        "SlotNumber": 2
+      }
+    ],
+    "RoomBoxes": [
+      {
+        "OutputNumber": 1,
+        "ClassName": "Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4k100C"
+      },
+      {
+        "OutputNumber": 2,
+        "ClassName": "Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4k100C"
+      }
+    ]
+  },
+  "Displays": [
+    {
+      "Name": "Primary Display",
+      "Library": "Displays.dll",
+      "ClassName": "Displays.Rs232DisplayComPort",
+      "ComProtocol": "RS232",
+      "ComConnectionPoint": 1,
+      "Port": 1,
+      "SwitcherOutput": 1,
+      "VolumeControl": false
+    },
+    {
+      "Name": "Secondary Display",
+      "Library": "Displays.dll",
+      "ClassName": "Displays.TcpIpDisplayComPort",
+      "ComProtocol": "TcpIp",
+      "ComConnectionPoint": 2,
+      "Port": 1,
+      "SwitcherOutput": 2,
+      "VolumeControl": false
+    }
+  ],
+  "Sources": [
+    {
+      "Name": "Cable Box",
+      "Library": "Sources.dll",
+      "Type": "Cable Box",
+      "ClassName": "Sources.CableBox.CableBox",
+      "SwitcherInput": 1,
+      "GuId": 12
+    },
+    {
+      "Name": "Video Player",
+      "Type": "Video PLayer",
+      "Library": "Sources.dll",
+      "ClassName": "Sources.VideoPlayer.VideoPlayer",
+      "SwitcherInput": 2,
+      "GuId": 13
+    },
+    {
+      "Name": "Video Conference",
+      "Type": "Video Codec",
+      "Library": "Sources.dll",
+      "ClassName": "Sources.Codec.CodecDriver",
+      "SwitcherInput": 3,
+      "GuId": 14
+    }
+  ],
+  "Touchscreens": [
+    {
+      "Name": "TSW-752",
+      "Library": "Crestron.SimplSharpPro.UI.dll",
+      "ClassName": "Crestron.SimplSharpPro.UI.Tsw752",
+      "IpId": 42
+    }
+  ],
+  "RfGateways": [
+    {
+      "Library": "Crestron.SimplSharpPro.Gateways.dll",
+      "ClassName": "Crestron.SimplSharpPro.Gateways.CenRfgwEx",
+      "IpId": 43
+    }
+  ],
+  "LightingDevices": [
+    {
+      "Name": "Din8sw8_1",
+      "Library": "Crestron.SimplSharpPro.Lighting.dll",
+      "ClassName": "Din8Sw8",
+      "RfId": 45,
+      "GuId": 15
+    },
+    {
+      "Name": "Din8sw8_2",
+      "Library": "Crestron.SimplSharpPro.Lighting.dll",
+      "ClassName": "Din8Sw8",
+      "RfId": 46,
+      "GuId": 16
+    }
+  ],
+  "LightingPresets": [
+    {
+      "Name": "Off",
+      "Load": [
+        {
+          "DeviceName": "Din8sw8_1",
+          "LoadNumber": 1,
+          "Level": 0
+        }
+      ]
+    }
+  ]
+}
