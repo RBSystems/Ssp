@@ -3,7 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SspCertificationTest", "SspCertificationTest\SspCertificationTest.csproj", "{6965FD6C-ACFD-4454-AC3E-4AE18A4A339A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SspCompanyVideoDisplayComport", "SspCompanyVideoDisplays\SspCompanyVideoDisplayComport.csproj", "{2C7F1297-0060-41C0-B944-9A668776B570}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SspCompanyVideoDisplayEthernet", "SspCompanyVideoDisplayEthernet\SspCompanyVideoDisplayEthernet.csproj", "{04C67D70-DDB5-46CE-B7CC-D18971F5D803}"
+EndProject
 Global
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -13,6 +21,14 @@ Global
 		{6965FD6C-ACFD-4454-AC3E-4AE18A4A339A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6965FD6C-ACFD-4454-AC3E-4AE18A4A339A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6965FD6C-ACFD-4454-AC3E-4AE18A4A339A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C7F1297-0060-41C0-B944-9A668776B570}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C7F1297-0060-41C0-B944-9A668776B570}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C7F1297-0060-41C0-B944-9A668776B570}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C7F1297-0060-41C0-B944-9A668776B570}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04C67D70-DDB5-46CE-B7CC-D18971F5D803}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04C67D70-DDB5-46CE-B7CC-D18971F5D803}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04C67D70-DDB5-46CE-B7CC-D18971F5D803}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04C67D70-DDB5-46CE-B7CC-D18971F5D803}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
