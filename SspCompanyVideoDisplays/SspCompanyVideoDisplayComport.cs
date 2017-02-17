@@ -11,7 +11,7 @@ using Crestron.Display;
 
 namespace SspCompanyVideoDisplayComport
 {
-    public class SspCompanyVideoDisplayComport : SspCompanyVideoDisplay, ITcp
+    public class SspCompanyVideoDisplayComport : SspCompanyVideoDisplay, ISerialComport
     {
         public ComPortSpec ComSpec { get; private set; }
 

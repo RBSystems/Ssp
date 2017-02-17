@@ -11,9 +11,9 @@ using Crestron.Display;
 
 namespace SspCompanyVideoDisplayComport
 {
-    public class SspCompanyVideoDisplayComport : SspCompanyVideoDisplay, ISerialComport
+    public class SspCompanyVideoDisplayComport : SspCompanyVideoDisplay, ITcp
     {
-        public ComPortSpec ComSpec { get; private set; }
+        public int Port { get; private set; }
 
         private bool InternalSupportsDisconnect;
         public override bool SupportsDisconnect { get { return InternalSupportsDisconnect; } }
@@ -28,17 +28,20 @@ namespace SspCompanyVideoDisplayComport
             LoadComSettings();
         }
 
-        public void Initialize(IComPort comPort)
+        public void Initialize(IPAddress ipAddress, int port)
         {
             InternalSupportsDisconnect = false;
             InternalSupportsReconnect = false;
-            ConnectionTransport = new CommonSerialComport(comPort)
+
+            TcpTransport tcpTransport = new TcpTransport
             {
                 EnableLogging = InternalEnableLogging,
                 CustomLogger = InternalCustomLogger,
                 EnableRxDebug = InternalEnableRxDebug,
                 EnableTxDebug = InternalEnableTxDebug
             };
+            tcpTransport.Initialize(ipAddress, port);
+            ConnectionTransport = tcpTransport;
 
             DisplayProtocol = new SspCompanyVideoDisplayProtocol(ConnectionTransport, Id);
             DisplayProtocol.StateChange += StateChange;
@@ -71,16 +74,7 @@ namespace SspCompanyVideoDisplayComport
                 {
                     if (driverData.CrestronSerialDeviceApi != null)
                     {
-                        ComSpec = new ComPortSpec
-                        {
-                            BaudRate = driverData.CrestronSerialDeviceApi.Api.Communication.Baud,
-                            DataBits = driverData.CrestronSerialDeviceApi.Api.Communication.DataBits,
-                            HardwareHandShake = driverData.CrestronSerialDeviceApi.Api.Communication.HwHandshake,
-                            Parity = driverData.CrestronSerialDeviceApi.Api.Communication.Parity,
-                            Protocol = driverData.CrestronSerialDeviceApi.Api.Communication.Protocol,
-                            StopBits = driverData.CrestronSerialDeviceApi.Api.Communication.StopBits,
-                            SoftwareHandshake = driverData.CrestronSerialDeviceApi.Api.Communication.SwHandshake
-                        };
+                        Port = driverData.CrestronSerialDeviceApi.Api.Communication.Port;
                     }
                 }
             }
