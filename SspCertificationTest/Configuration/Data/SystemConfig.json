@@ -42,10 +42,12 @@
     ],
     "RoomBoxes": [
       {
+		"IpId" : 04,
         "OutputNumber": 1,
         "ClassName": "Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4k100C"
       },
       {
+		"IpId" : 05,
         "OutputNumber": 2,
         "ClassName": "Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4k100C"
       }

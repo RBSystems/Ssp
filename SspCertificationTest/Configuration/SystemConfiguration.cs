@@ -56,6 +56,7 @@ namespace SspCertificationTest.Configuration
     /// </summary>
     public class RoomBox
     {
+        public int IpId { get; set; }
         public int OutputNumber { get; set; }
         public string ClassName { get; set; }
     }

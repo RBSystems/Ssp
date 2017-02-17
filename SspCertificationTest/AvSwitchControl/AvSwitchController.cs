@@ -9,6 +9,7 @@ using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharp.Reflection;
 using SspCertificationTest.Utilities;
+using Crestron.SimplSharpPro.DM.Cards;
 
 namespace SspCertificationTest.AvSwitchControl
 {
@@ -55,10 +56,10 @@ namespace SspCertificationTest.AvSwitchControl
         /// </summary>
         public event EventHandler<GenericEventArgs<bool>> DeviceOnlineStatusEvent;
 
-        private EndpointReceiverBase[] RoomBoxes;   // Tracking the endpoints that have been assigned to the AV Switch
-        private Switch avSwitch;                    // The Crestron switcher object representing the physical hardware
-        private CrestronControlSystem master;       // The control system driving the given room
-        private AvSwitcher configData;              // JSON object defined in the configuration file.
+        private List<EndpointReceiverBase> RoomBoxes;   // Tracking the endpoints that have been assigned to the AV Switch
+        private Switch avSwitch;                        // The Crestron switcher object representing the physical hardware
+        private CrestronControlSystem master;           // The control system driving the given room
+        private AvSwitcher configData;                  // JSON object defined in the configuration file.
 
         /// <summary>
         /// Prepare controller for creating the AV Switcher hardware representation.
@@ -71,6 +72,7 @@ namespace SspCertificationTest.AvSwitchControl
             if (avData == null || control == null) throw new ArgumentException("Constructor arguments cannot be null.");
             master = control;
             configData = avData;
+            RoomBoxes = new List<EndpointReceiverBase>();
         }
 
         /// <summary>
@@ -79,12 +81,63 @@ namespace SspCertificationTest.AvSwitchControl
         /// <returns>TRUE if initialization was successful, FALSE otherwise.</returns>
         public bool Initialize()
         {
-            //TODO Build AV Switch object via reflection
+            Assembly dll = Assembly.LoadFrom(configData.Library);
+            if (dll != null)
+            {
+                //List<CardDevice> inputCards = new List<CardDevice>();
+                //List<CardDevice> outputCards = new List<CardDevice>();
+
+                // Create defined AV Frame
+                CType switchType = dll.GetType(configData.ClassName);
+                ConstructorInfo ciSwitch = switchType.GetConstructor(new CType[] {typeof(UInt32),typeof(CrestronControlSystem)});
+                object swInstance = ciSwitch.Invoke(new object[] {Convert.ToUInt32(configData.IpId), master });
+                avSwitch = (Switch)swInstance;
+
+                if (configData.IsConfigurable)
+                {
+                    // Create all defined input cards
+                    foreach (var card in configData.InputCards)
+                    {
+                        CType input = dll.GetType(card.ClassName);
+                        ConstructorInfo cInfo = input.GetConstructor(new CType[] { typeof(UInt32), typeof(Switch) });
+                        object cInstance = cInfo.Invoke(new object[] { Convert.ToUInt32(card.SlotNumber), avSwitch });
+                    }
+
+                    // Create all defined output cards
+                    foreach (var card in configData.OutputCards)
+                    {
+                        CType output = dll.GetType(card.ClassName);
+                        ConstructorInfo cInfo = output.GetConstructor(new CType[] {typeof(UInt32), typeof(Switch) });
+                        object oInstance = cInfo.Invoke(new object[] {Convert.ToUInt32(card.SlotNumber), avSwitch });
+                    }
+                }
+
+                //TODO Add endpoints to given output channels
+                foreach (RoomBox roomBox in configData.RoomBoxes)
+                {
+                    CType epType = dll.GetType(roomBox.ClassName);
+                    ConstructorInfo cInfo = epType.GetConstructor(new CType[] { typeof(UInt32), typeof(DMOutput) });
+                    RoomBoxes.Add((EndpointReceiverBase)cInfo.Invoke(new object[] { Convert.ToUInt32(roomBox.IpId), avSwitch.Outputs[Convert.ToUInt32(roomBox.OutputNumber)] }));
+                }
+
+                //TODO Register Switcher
+                if (avSwitch.Register() != eDeviceRegistrationUnRegistrationResponse.Success)
+                {
+                    ErrorLog.Error("Failed to register AV switch: {0}", avSwitch.RegistrationFailureReason);
+                    return false;
+                }
+
+                //TODO Register Endpoints
+            }
+            else
+            {
+                ErrorLog.Error("Failed to load assembly information.");
+            }
             return false;
         }
 
         /// <summary>
-        /// Assign a roombox/endpoint to the given output channel.
+        /// Assign a roombox/endpoint to the given output channel. Index starts at 1.
         /// </summary>
         /// <param name="output">The target output channel for the endpoint</param>
         /// <param name="endpoint">the endpoint that will be assigned to the target output.</param>
@@ -104,11 +157,19 @@ namespace SspCertificationTest.AvSwitchControl
             }
         }
 
+        /// <summary>
+        /// Get the ComPort collection from the endpoint at the given output channel.
+        /// If there is no endpoint or if the endpoint does not support ComPorts then NULL is returned.
+        /// </summary>
+        /// <param name="output">The output channel connected to the target endpoint</param>
+        /// <returns>a collection of ComPorts on that output or NULL if there is no endpoint or comports are not supported.</returns>
+        /// <exception cref="ArgumentException">If "output" is greater than the number of output channels on the AV switch device.</exception>
         public ComPort[] GetEndpointComports(uint output)
         {
+            if (output > NumOutputs) throw new ArgumentException("Argument 'output' cannot be greater than the number of output channels.");
             if (IsInitialized)
             {
-
+                //TODO check the given output for existing endpoint, see if the endpoint supports ComPorts, return the ComPort collection for that endpoint or null.
                 return null;
             }
             else
@@ -117,11 +178,18 @@ namespace SspCertificationTest.AvSwitchControl
             }
         }
 
+        /// <summary>
+        /// Route the target AV input to the given output channel. Indexing starts at 1.
+        /// </summary>
+        /// <param name="input">The input that will be routed</param>
+        /// <param name="output">The target output channel on the AV Switch</param>
+        /// <exception cref="ArgumentException">If input > NumInputs or if output > NumOutputs</exception>"
         public void Route(uint input, uint output)
         {
+            if (input > NumInputs || output > NumOutputs) throw new ArgumentException("Arguments input & output cannot be greater than the collection of AV input/output channels.");
             if (IsInitialized)
             {
-
+                //TODO Implement routing functionality
             }
             else
             {
@@ -129,11 +197,14 @@ namespace SspCertificationTest.AvSwitchControl
             }
         }
 
+        /// <summary>
+        /// Remove any matrix routing on the AV Switch device
+        /// </summary>
         public void ClearAllRoutes()
         {
             if (IsInitialized)
             {
-
+                //TODO Set all output channels to input 0.
             }
             else
             {
@@ -141,10 +212,19 @@ namespace SspCertificationTest.AvSwitchControl
             }
         }
 
+        /// <summary>
+        /// retreive the current input number that is routed to the target output.
+        /// Arguments & return value are 1-indexed.
+        /// </summary>
+        /// <param name="output">The target output to get input routing from</param>
+        /// <returns>The index of the routed input, or 0 if no input is routed.</returns>
+        /// <exception cref="ArgumentException">if output > NumOutputs</exception>"
         public uint GetCurrentRoute(uint output)
         {
+            if (output > NumOutputs) throw new ArgumentException("Argument 'output' cannot be greater than the number of output channels.");
             if (IsInitialized)
             {
+                //TODO Return the value of current route
                 return 0;
             }
             else
