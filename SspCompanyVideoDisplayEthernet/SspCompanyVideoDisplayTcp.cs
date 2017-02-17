@@ -9,9 +9,9 @@ using Crestron.ThirdPartyCommon.Transports;
 using Newtonsoft.Json;
 using Crestron.Display;
 
-namespace SspCompanyVideoDisplayComport
+namespace SspCompanyVideoDisplayTcp
 {
-    public class SspCompanyVideoDisplayComport : SspCompanyVideoDisplay, ITcp
+    public class SspCompanyVideoDisplayTcp : SspCompanyVideoDisplay, ITcp
     {
         public int Port { get; private set; }
 
@@ -23,7 +23,7 @@ namespace SspCompanyVideoDisplayComport
 
         private SimplTransport transport;
 
-        public SspCompanyVideoDisplayComport()
+        public SspCompanyVideoDisplayTcp()
         {
             LoadComSettings();
         }

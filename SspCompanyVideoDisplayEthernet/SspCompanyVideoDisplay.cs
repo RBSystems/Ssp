@@ -6,7 +6,7 @@ using Crestron.SimplSharp;
 using Crestron.Display;
 using Crestron.ThirdPartyCommon.Class;
 
-namespace SspCompanyVideoDisplayComport
+namespace SspCompanyVideoDisplayTcp
 {
     public class SspCompanyVideoDisplay : ABasicVideoDisplay
     {

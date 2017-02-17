@@ -2,7 +2,7 @@
 using Crestron.SimplSharp;                          				// For Basic SIMPL# Classes
 using Crestron.SimplSharpPro;                       				// For Basic SIMPL#Pro classes
 
-namespace SspCompanyVideoDisplayComport
+namespace SspCompanyVideoDisplayTcp
 {
     public class DataFileString
     {
