@@ -17,21 +17,6 @@ namespace SspCompanyVideoDisplayComport
             DataFile = DataFileString.Json;
         }
 
-        public override bool SupportsChangeVolume { get { return true; } }
-        public override bool SupportsCoolDownTime { get { return true; } }
-        public override bool SupportsDisconnect { get { return true; } }
-        public override bool SupportsDiscreteMute { get { return false; } }
-        public override bool SupportsDiscretePower { get { return true; } }
-        public override bool SupportsInputFeedback { get { return true; } }
-        public override bool SupportsLampHours { get { return true; } }
-        public override bool SupportsMuteFeedback { get { return true; } }
-        public override bool SupportsPowerFeedback { get { return true; } }
-        public override bool SupportsReconnect { get { return true; } }
-        public override bool SupportsSetInputSource { get { return true; } }
-        public override bool SupportsSetVolume { get { return true; } }
-        public override bool SupportsTogglePower { get { return true; } }
-        public override bool SupportsVolumePercentFeedback { get { return true; } }
-        public override bool SupportsWarmUpTime { get { return true; } }
         public override string Description { get { return "Dynamic display driver implementation for SimplSharpPro certification test."; } }
         public override Guid Guid { get { return new Guid(); } }
         public override string Manufacturer { get { return "SSP Company"; } }

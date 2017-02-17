@@ -13,8 +13,6 @@ namespace SspCompanyVideoDisplayComport
 {
     public class SspCompanyVideoDisplayComport : SspCompanyVideoDisplay, ISerialComport
     {
-        public ComPortSpec ComSpec { get; private set; }
-
         private bool InternalSupportsDisconnect;
         public override bool SupportsDisconnect { get { return InternalSupportsDisconnect; } }
 
@@ -24,9 +22,7 @@ namespace SspCompanyVideoDisplayComport
         private SimplTransport transport;
 
         public SspCompanyVideoDisplayComport()
-        {
-            LoadComSettings();
-        }
+        {}
 
         public void Initialize(IComPort comPort)
         {
@@ -42,8 +38,8 @@ namespace SspCompanyVideoDisplayComport
 
             DisplayProtocol = new SspCompanyVideoDisplayProtocol(ConnectionTransport, Id);
             DisplayProtocol.StateChange += StateChange;
-            DisplayProtocol.LoadDriver(DataFile);
             DisplayProtocol.RxOut += SendRxOut;
+            DisplayProtocol.Initialize(DriverData);
         }
 
         public SimplTransport Initialize(Action<string, object[]> send)
@@ -57,37 +53,8 @@ namespace SspCompanyVideoDisplayComport
             DisplayProtocol = new SspCompanyVideoDisplayProtocol(ConnectionTransport, Id);
             DisplayProtocol.StateChange += StateChange;
             DisplayProtocol.RxOut += SendRxOut;
-            DisplayProtocol.LoadDriver(DataFile);
+            DisplayProtocol.Initialize(DriverData);
             return transport;
-        }
-
-        public void LoadComSettings()
-        {
-            try
-            {
-                var json = DataFile;
-                var driverData = JsonConvert.DeserializeObject<RootObject>(json);
-                if (driverData != null)
-                {
-                    if (driverData.CrestronSerialDeviceApi != null)
-                    {
-                        ComSpec = new ComPortSpec
-                        {
-                            BaudRate = driverData.CrestronSerialDeviceApi.Api.Communication.Baud,
-                            DataBits = driverData.CrestronSerialDeviceApi.Api.Communication.DataBits,
-                            HardwareHandShake = driverData.CrestronSerialDeviceApi.Api.Communication.HwHandshake,
-                            Parity = driverData.CrestronSerialDeviceApi.Api.Communication.Parity,
-                            Protocol = driverData.CrestronSerialDeviceApi.Api.Communication.Protocol,
-                            StopBits = driverData.CrestronSerialDeviceApi.Api.Communication.StopBits,
-                            SoftwareHandshake = driverData.CrestronSerialDeviceApi.Api.Communication.SwHandshake
-                        };
-                    }
-                }
-            }
-            catch
-            {
-                Log("Attempt to load unknown com settings.");
-            }
         }
     }
 }

@@ -13,8 +13,6 @@ namespace SspCompanyVideoDisplayTcp
 {
     public class SspCompanyVideoDisplayTcp : SspCompanyVideoDisplay, ITcp
     {
-        public int Port { get; private set; }
-
         private bool InternalSupportsDisconnect;
         public override bool SupportsDisconnect { get { return InternalSupportsDisconnect; } }
 
@@ -23,10 +21,7 @@ namespace SspCompanyVideoDisplayTcp
 
         private SimplTransport transport;
 
-        public SspCompanyVideoDisplayTcp()
-        {
-            LoadComSettings();
-        }
+        public SspCompanyVideoDisplayTcp() {}
 
         public void Initialize(IPAddress ipAddress, int port)
         {
@@ -45,8 +40,8 @@ namespace SspCompanyVideoDisplayTcp
 
             DisplayProtocol = new SspCompanyVideoDisplayProtocol(ConnectionTransport, Id);
             DisplayProtocol.StateChange += StateChange;
-            DisplayProtocol.LoadDriver(DataFile);
             DisplayProtocol.RxOut += SendRxOut;
+            DisplayProtocol.Initialize(DriverData);
         }
 
         public SimplTransport Initialize(Action<string, object[]> send)
@@ -60,28 +55,8 @@ namespace SspCompanyVideoDisplayTcp
             DisplayProtocol = new SspCompanyVideoDisplayProtocol(ConnectionTransport, Id);
             DisplayProtocol.StateChange += StateChange;
             DisplayProtocol.RxOut += SendRxOut;
-            DisplayProtocol.LoadDriver(DataFile);
+            DisplayProtocol.Initialize(DriverData);
             return transport;
-        }
-
-        public void LoadComSettings()
-        {
-            try
-            {
-                var json = DataFile;
-                var driverData = JsonConvert.DeserializeObject<RootObject>(json);
-                if (driverData != null)
-                {
-                    if (driverData.CrestronSerialDeviceApi != null)
-                    {
-                        Port = driverData.CrestronSerialDeviceApi.Api.Communication.Port;
-                    }
-                }
-            }
-            catch
-            {
-                Log("Attempt to load unknown com settings.");
-            }
         }
     }
 }
