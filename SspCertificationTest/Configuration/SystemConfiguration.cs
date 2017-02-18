@@ -71,7 +71,7 @@ namespace SspCertificationTest.Configuration
         public string ClassName { get; set; }
         public int IpId { get; set; }
         public int FusionIpId { get; set; }
-        public int GuId { get; set; }
+        public string GuId { get; set; }
         public bool IsConfigurable { get; set; }
         public List<InputCard> InputCards { get; set; }
         public List<OutputCard> OutputCards { get; set; }

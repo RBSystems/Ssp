@@ -23,6 +23,11 @@ namespace SspCertificationTest.AvSwitchControl
         /// </summary>
         public uint IpId { get; set;}
 
+        public Guid GUID { get; private set;}
+
+        public uint FusionIpId { get; set; }
+
+
         /// <summary>
         /// Returns the fully qualified name of the AV Switching object that was defined in the configuration data package.
         /// </summary>
@@ -86,6 +91,8 @@ namespace SspCertificationTest.AvSwitchControl
             {
                 //List<CardDevice> inputCards = new List<CardDevice>();
                 //List<CardDevice> outputCards = new List<CardDevice>();
+                GUID = new Guid(configData.GuId);
+                FusionIpId = Convert.ToUInt32(configData.FusionIpId);
 
                 // Create defined AV Frame
                 CType switchType = dll.GetType(configData.ClassName);
@@ -120,7 +127,7 @@ namespace SspCertificationTest.AvSwitchControl
                     RoomBoxes.Add((EndpointReceiverBase)cInfo.Invoke(new object[] { Convert.ToUInt32(roomBox.IpId), avSwitch.Outputs[Convert.ToUInt32(roomBox.OutputNumber)] }));
                 }
 
-                //TODO Register Switcher
+                // Register Switcher
                 if (avSwitch.Register() != eDeviceRegistrationUnRegistrationResponse.Success)
                 {
                     ErrorLog.Error("Failed to register AV switch: {0}", avSwitch.RegistrationFailureReason);
@@ -128,32 +135,20 @@ namespace SspCertificationTest.AvSwitchControl
                 }
 
                 //TODO Register Endpoints
+                foreach (var box in RoomBoxes)
+                {
+                    if (box.Register() != eDeviceRegistrationUnRegistrationResponse.Success)
+                    {
+                        ErrorLog.Error("Failed to register room box for input {0} - {1}", box.DMOutput.Number, box.RegistrationFailureReason);
+                        return false;
+                    }
+                }
+                return true;
             }
             else
             {
                 ErrorLog.Error("Failed to load assembly information.");
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Assign a roombox/endpoint to the given output channel. Index starts at 1.
-        /// </summary>
-        /// <param name="output">The target output channel for the endpoint</param>
-        /// <param name="endpoint">the endpoint that will be assigned to the target output.</param>
-        /// <exception cref="ArgumentException">if "output" is greater than the number of supported outputs, or if "endpoint" is null.</exception>
-        public void AddEndpoint(uint output, EndpointReceiverBase endpoint)
-        {
-            if (output > NumOutputs) throw new ArgumentException("Argument 'output' cannot be greater than the number of defined outputs.");
-            if (endpoint == null) throw new ArgumentException("Argument 'endpoint' cannot be null.");
-
-            if (IsInitialized)
-            {
-                //TODO Add endpoint to the target output channel
-            }
-            else
-            {
-                throw new InvalidOperationException("AvSwitchController has not been initialized.");
+                return false;
             }
         }
 
@@ -170,6 +165,7 @@ namespace SspCertificationTest.AvSwitchControl
             if (IsInitialized)
             {
                 //TODO check the given output for existing endpoint, see if the endpoint supports ComPorts, return the ComPort collection for that endpoint or null.
+
                 return null;
             }
             else
@@ -179,7 +175,7 @@ namespace SspCertificationTest.AvSwitchControl
         }
 
         /// <summary>
-        /// Route the target AV input to the given output channel. Indexing starts at 1.
+        /// Route the target AV input to the given output channel (Audio and Video). Indexing starts at 1.
         /// </summary>
         /// <param name="input">The input that will be routed</param>
         /// <param name="output">The target output channel on the AV Switch</param>
@@ -189,7 +185,49 @@ namespace SspCertificationTest.AvSwitchControl
             if (input > NumInputs || output > NumOutputs) throw new ArgumentException("Arguments input & output cannot be greater than the collection of AV input/output channels.");
             if (IsInitialized)
             {
-                //TODO Implement routing functionality
+                // Implement routing functionality
+                avSwitch.Outputs[output].VideoOut = avSwitch.Inputs[input];
+                avSwitch.Outputs[output].AudioOut = avSwitch.Inputs[input];
+            }
+            else
+            {
+                throw new InvalidOperationException("AvSwitchController has not been initialized.");
+            }
+        }
+
+        /// <summary>
+        /// Route the target video input to the given output channel. Indexing starts at 1.
+        /// </summary>
+        /// <param name="input">The input that will be routed</param>
+        /// <param name="output">The target output channel on the AV Switch</param>
+        /// <exception cref="ArgumentException">If input > NumInputs or if output > NumOutputs</exception>"
+        public void RouteVideo(uint input, uint output)
+        {
+            if (input > NumInputs || output > NumOutputs) throw new ArgumentException("Arguments input & output cannot be greater than the collection of AV input/output channels.");
+            if (IsInitialized)
+            {
+                // Implement routing functionality
+                avSwitch.Outputs[output].VideoOut = avSwitch.Inputs[input];
+            }
+            else
+            {
+                throw new InvalidOperationException("AvSwitchController has not been initialized.");
+            }
+        }
+
+        /// <summary>
+        /// Route the target audio input to the given output channel. Indexing starts at 1.
+        /// </summary>
+        /// <param name="input">The input that will be routed</param>
+        /// <param name="output">The target output channel on the AV Switch</param>
+        /// <exception cref="ArgumentException">If input > NumInputs or if output > NumOutputs</exception>"
+        public void RouteAudio(uint input, uint output)
+        {
+            if (input > NumInputs || output > NumOutputs) throw new ArgumentException("Arguments input & output cannot be greater than the collection of AV input/output channels.");
+            if (IsInitialized)
+            {
+                // Implement routing functionality
+                avSwitch.Outputs[output].AudioOut = avSwitch.Inputs[input];
             }
             else
             {
@@ -204,7 +242,12 @@ namespace SspCertificationTest.AvSwitchControl
         {
             if (IsInitialized)
             {
-                //TODO Set all output channels to input 0.
+                // Set all output channels to input 0.
+                foreach (var output in avSwitch.Outputs)
+                {
+                    output.VideoOut = avSwitch.Inputs[0];
+                    output.AudioOut = avSwitch.Inputs[0];
+                }
             }
             else
             {
@@ -213,24 +256,45 @@ namespace SspCertificationTest.AvSwitchControl
         }
 
         /// <summary>
-        /// retreive the current input number that is routed to the target output.
+        /// retreive the current video input number that is routed to the target output.
         /// Arguments & return value are 1-indexed.
         /// </summary>
         /// <param name="output">The target output to get input routing from</param>
-        /// <returns>The index of the routed input, or 0 if no input is routed.</returns>
+        /// <returns>The index of the routed video input, or 0 if no input is routed.</returns>
         /// <exception cref="ArgumentException">if output > NumOutputs</exception>"
-        public uint GetCurrentRoute(uint output)
+        public uint GetCurrentVideoRoute(uint output)
         {
             if (output > NumOutputs) throw new ArgumentException("Argument 'output' cannot be greater than the number of output channels.");
             if (IsInitialized)
             {
-                //TODO Return the value of current route
-                return 0;
+                // Return the value of current route
+                return avSwitch.Outputs[output].VideoOutFeedback.Number;
             }
             else
             {
                 throw new InvalidOperationException("AvSwitchController has not been initialized.");
             } 
+        }
+
+        /// <summary>
+        /// retreive the current audio input number that is routed to the target output.
+        /// Arguments & return value are 1-indexed.
+        /// </summary>
+        /// <param name="output">The target output to get input routing from</param>
+        /// <returns>The index of the routed audio input, or 0 if no input is routed.</returns>
+        /// <exception cref="ArgumentException">if output > NumOutputs</exception>"
+        public uint GetCurrentAudioRoute(uint output)
+        {
+            if (output > NumOutputs) throw new ArgumentException("Argument 'output' cannot be greater than the number of output channels.");
+            if (IsInitialized)
+            {
+                // Return the value of current route
+                return avSwitch.Outputs[output].AudioOutFeedback.Number;
+            }
+            else
+            {
+                throw new InvalidOperationException("AvSwitchController has not been initialized.");
+            }
         }
     }
 }

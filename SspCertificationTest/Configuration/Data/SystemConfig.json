@@ -10,7 +10,7 @@
     "ClassName": "Crestron.SimplSharpPro.DM.DmMd8x8",
     "IpId": 42,
     "FusionIpId": 12,
-    "GuId": 11,
+    "GuId": "0000000",
     "IsConfigurable": true,
     "InputCards": [
       {
