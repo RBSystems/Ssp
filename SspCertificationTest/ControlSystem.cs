@@ -7,6 +7,7 @@ using Crestron.SimplSharpPro.DeviceSupport;         	// For Generic Device Suppo
 using Crestron.SimplSharpPro.Gateways;
 using Crestron.SimplSharpPro.Lighting;
 using SspCertificationTest.Configuration;               // JSON parsing helpers for system setup
+using SspCertificationTest.AvSwitchControl;
 
 namespace SspCertificationTest
 {
@@ -153,12 +154,22 @@ namespace SspCertificationTest
 
         void DoWork(string args)
         {
-            string rawData = JsonHelper.ReadJsonData(@"\NVRAM\ScheduledEvents.json");
-            ScheduleEventData config = JsonHelper.ParseScheduledEvents(rawData);
-
-            foreach (ScheduledEvent e in config.ScheduledEvents)
+            try
             {
-                CrestronConsole.PrintLine("{0}: {1}:{2}{3}, Preset {4}", e.EventName, e.Hour, e.Minute, (e.IsAm) ? "AM" : "PM", e.PresetNumber);
+                string rawConfig = JsonHelper.ReadJsonData(@"\NVRAM\SystemConfig.json");
+                SystemConfiguration configData = JsonHelper.ParseConfigJson(rawConfig);
+
+                AvSwitchController avSwitch = new AvSwitchController(configData.AvSwitcher, this);
+                
+                if (avSwitch.Initialize())
+                {
+                    CrestronConsole.PrintLine("avSwitch successfully initialized.");
+                    avSwitch.ClearAllRoutes();
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorLog.Error("Exception in DoWork: {0} -- {1}", e.Message, e.StackTrace);
             }
         }
     }

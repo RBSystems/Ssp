@@ -137,12 +137,13 @@ namespace SspCertificationTest.AvSwitchControl
                 //TODO Register Endpoints
                 foreach (var box in RoomBoxes)
                 {
-                    if (box.Register() != eDeviceRegistrationUnRegistrationResponse.Success)
+                    if (!box.Registered && box.Register() != eDeviceRegistrationUnRegistrationResponse.Success)
                     {
                         ErrorLog.Error("Failed to register room box for input {0} - {1}", box.DMOutput.Number, box.RegistrationFailureReason);
                         return false;
                     }
                 }
+                IsInitialized = true;
                 return true;
             }
             else
