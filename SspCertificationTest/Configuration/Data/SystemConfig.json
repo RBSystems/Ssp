@@ -57,22 +57,32 @@
     {
       "Name": "Primary Display",
       "Library": "Displays.dll",
-      "ClassName": "Displays.Rs232DisplayComPort",
+      "ClassName": "Displays.SspCompanyVideoDisplayComPort",
       "ComProtocol": "RS232",
       "ComConnectionPoint": 1,
       "Port": 1,
       "SwitcherOutput": 1,
-      "VolumeControl": false
+      "VolumeControl": true
     },
     {
       "Name": "Secondary Display",
       "Library": "Displays.dll",
-      "ClassName": "Displays.TcpIpDisplayComPort",
+      "ClassName": "Displays.SspCompanyVideoDisplayTcp",
       "ComProtocol": "TcpIp",
       "ComConnectionPoint": 2,
       "Port": 1,
       "SwitcherOutput": 2,
       "VolumeControl": false
+    },
+    {
+	  "Name": "Confidence Monitor",
+	  "Library": "Displays.dll",
+	  "ClassName": "Displays.SspCompanyVideoDisplayComPort",
+	  "ComProtocol": "RS232",
+	  "ComConnectionPoint":0,
+	  "Port": 1,
+	  "SwitcherOutput": 0,
+	  "VolumeControl":false
     }
   ],
   "Sources": [

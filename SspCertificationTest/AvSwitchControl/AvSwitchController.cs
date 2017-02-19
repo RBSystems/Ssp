@@ -18,21 +18,27 @@ namespace SspCertificationTest.AvSwitchControl
     /// </summary>
     public class AvSwitchController
     {
+        #region Properties
         /// <summary>
         /// The IP-ID used for connecting with the control system.
         /// </summary>
-        public uint IpId { get; set;}
+        public uint IpId { get; private set;}
 
+        /// <summary>
+        /// Unique identifier used by fusion to manage this device
+        /// </summary>
         public Guid GUID { get; private set;}
 
-        public uint FusionIpId { get; set; }
-
+        /// <summary>
+        /// IP-ID used by fusion
+        /// </summary>
+        public uint FusionIpId { get; private set; }
 
         /// <summary>
         /// Returns the fully qualified name of the AV Switching object that was defined in the configuration data package.
         /// </summary>
         public string SwitchType { get; private set; }
-
+        
         /// <summary>
         /// The number of input channels defined in the configuration package.
         /// </summary>
@@ -44,27 +50,56 @@ namespace SspCertificationTest.AvSwitchControl
         public uint NumOutputs { get; private set; }
 
         /// <summary>
+        /// Indicates whether or not the underlying AV Switch is online. TRUE = device online, FALSE = device offline
+        /// </summary>
+        public bool Online
+        {
+            get
+            {
+                if (IsInitialized)
+                    return avSwitch.IsOnline;
+                else
+                    throw new InvalidOperationException("AvSwitchController has not been initialized.");
+            }
+        }
+
+        /// <summary>
         /// Indicates that the AVSwitchController has been successfully configured.
         /// True = ready to respond to switching requests, False = All methods will end without running.
         /// </summary>
         public bool IsInitialized { get; private set; }
+        #endregion
 
+        #region Event Handlers
         /// <summary>
-        /// Event thrown when a routing change is detected on the AV Switcher device.
+        /// Event thrown when a video routing change is detected on the AV Switcher device.
         /// Argument package: Target = output, Value = input.
         /// </summary>
-        public event EventHandler<GenericEventArgs<uint,uint>> SourceChangeEvent;
+        public event EventHandler<GenericEventArgs<uint,uint>> VideoOutputSourceChangeEvent;
+
+        /// <summary>
+        /// Event thrown when an audio routing change is detected on the AV Switcher device.
+        /// Argument package: Target = output, Value = input.
+        /// </summary>
+        public event EventHandler<GenericEventArgs<uint, uint>> AudioOutputSourceChangeEvent;
+
+        /// <summary>
+        /// Notifies subscribers when a change to the video sync of any input changes.
+        /// Target = input index that changed, Value = true if sync detected, false if sync not detected.
+        /// </summary>
+        public event EventHandler<GenericEventArgs<uint, bool>> InputVideoSyncEvent;
 
         /// <summary>
         /// Event thrown when the AV Switch goes offline or comes online.
         /// Argument Package: Value = true when device online, false when device offline.
         /// </summary>
         public event EventHandler<GenericEventArgs<bool>> DeviceOnlineStatusEvent;
+        #endregion
 
         private List<EndpointReceiverBase> RoomBoxes;   // Tracking the endpoints that have been assigned to the AV Switch
         private Switch avSwitch;                        // The Crestron switcher object representing the physical hardware
         private CrestronControlSystem master;           // The control system driving the given room
-        private AvSwitcher configData;                  // JSON object defined in the configuration file.
+        private AvSwitcher configData;                  // JSON object created from the configuration file.
 
         /// <summary>
         /// Prepare controller for creating the AV Switcher hardware representation.
@@ -80,6 +115,7 @@ namespace SspCertificationTest.AvSwitchControl
             RoomBoxes = new List<EndpointReceiverBase>();
         }
 
+        #region Public Methods
         /// <summary>
         /// Runs the Switch construction based on the data supplied during instantiation.
         /// </summary>
@@ -89,16 +125,20 @@ namespace SspCertificationTest.AvSwitchControl
             Assembly dll = Assembly.LoadFrom(configData.Library);
             if (dll != null)
             {
-                //List<CardDevice> inputCards = new List<CardDevice>();
-                //List<CardDevice> outputCards = new List<CardDevice>();
+                // assign data to public properties
                 GUID = new Guid(configData.GuId);
                 FusionIpId = Convert.ToUInt32(configData.FusionIpId);
+                SwitchType = configData.ClassName;
+                IpId = (uint)configData.IpId;
 
                 // Create defined AV Frame
                 CType switchType = dll.GetType(configData.ClassName);
                 ConstructorInfo ciSwitch = switchType.GetConstructor(new CType[] {typeof(UInt32),typeof(CrestronControlSystem)});
                 object swInstance = ciSwitch.Invoke(new object[] {Convert.ToUInt32(configData.IpId), master });
                 avSwitch = (Switch)swInstance;
+                avSwitch.DMOutputChange += new DMOutputEventHandler(avSwitch_VideoDMOutputChange);
+                avSwitch.OnlineStatusChange += new OnlineStatusChangeEventHandler(avSwitch_OnlineStatusChange);
+                avSwitch.DMInputChange += new DMInputEventHandler(avSwitch_DMInputChange);
 
                 if (configData.IsConfigurable)
                 {
@@ -119,7 +159,10 @@ namespace SspCertificationTest.AvSwitchControl
                     }
                 }
 
-                //TODO Add endpoints to given output channels
+                NumInputs = (uint)avSwitch.NumberOfInputs;
+                NumOutputs = (uint)avSwitch.NumberOfOutputs;
+
+                // Add endpoints to given output channels
                 foreach (RoomBox roomBox in configData.RoomBoxes)
                 {
                     CType epType = dll.GetType(roomBox.ClassName);
@@ -134,7 +177,7 @@ namespace SspCertificationTest.AvSwitchControl
                     return false;
                 }
 
-                //TODO Register Endpoints
+                // Register Endpoints
                 foreach (var box in RoomBoxes)
                 {
                     if (!box.Registered && box.Register() != eDeviceRegistrationUnRegistrationResponse.Success)
@@ -160,14 +203,23 @@ namespace SspCertificationTest.AvSwitchControl
         /// <param name="output">The output channel connected to the target endpoint</param>
         /// <returns>a collection of ComPorts on that output or NULL if there is no endpoint or comports are not supported.</returns>
         /// <exception cref="ArgumentException">If "output" is greater than the number of output channels on the AV switch device.</exception>
-        public ComPort[] GetEndpointComports(uint output)
+        public CrestronCollection<ComPort> GetEndpointComports(uint output)
         {
             if (output > NumOutputs) throw new ArgumentException("Argument 'output' cannot be greater than the number of output channels.");
             if (IsInitialized)
             {
-                //TODO check the given output for existing endpoint, see if the endpoint supports ComPorts, return the ComPort collection for that endpoint or null.
-
-                return null;
+                try
+                {
+                    GenericBase obj = avSwitch.Outputs[output].Endpoint;
+                    CType endpointType = obj.GetType();
+                    PropertyInfo endProp = endpointType.GetProperty("ComPorts");
+                    return (CrestronCollection<ComPort>)endProp.GetValue(obj, new object[] { });
+                }
+                catch (Exception e)
+                {
+                    ErrorLog.Error("Problem retreiving endpoint ComPort: {0} -- {1}", e.Message, e.StackTrace);
+                    return null;
+                }
             }
             else
             {
@@ -243,11 +295,10 @@ namespace SspCertificationTest.AvSwitchControl
         {
             if (IsInitialized)
             {
-                // Set all output channels to input 0.
                 foreach (var output in avSwitch.Outputs)
                 {
-                    output.VideoOut = avSwitch.Inputs[0];
-                    output.AudioOut = avSwitch.Inputs[0];
+                    output.VideoOut = null;
+                    output.AudioOut = null;
                 }
             }
             else
@@ -297,5 +348,48 @@ namespace SspCertificationTest.AvSwitchControl
                 throw new InvalidOperationException("AvSwitchController has not been initialized.");
             }
         }
+        #endregion
+
+        #region Internal handling of DM events
+        private void avSwitch_VideoDMOutputChange(Switch device, DMOutputEventArgs args)
+        {
+            // report the changed output and the new input to the event handler
+            EventHandler<GenericEventArgs<uint, uint>> temp = VideoOutputSourceChangeEvent;
+            if (temp != null && args.EventId == DMOutputEventIds.VideoOutEventId)
+            {
+                temp(this, new GenericEventArgs<uint,uint>(args.Number, avSwitch.Outputs[args.Number].VideoOutFeedback.Number));
+            }
+        }
+
+        private void avSwitch_AudioDMOutputChange(Switch device, DMOutputEventArgs args)
+        {
+            // report the changed output and the new input to the event handler
+            EventHandler<GenericEventArgs<uint, uint>> temp = AudioOutputSourceChangeEvent;
+            if (temp != null && args.EventId == DMOutputEventIds.AudioOutEventId)
+            {
+                temp(this, new GenericEventArgs<uint, uint>(args.Number, avSwitch.Outputs[args.Number].AudioOutFeedback.Number));
+            }
+        }
+
+        private void avSwitch_OnlineStatusChange(GenericBase currentDevice, OnlineOfflineEventArgs args)
+        {
+            // report online/offline status to event handler
+            EventHandler<GenericEventArgs<bool>> temp = DeviceOnlineStatusEvent;
+            if (temp != null)
+            {
+                temp(this, new GenericEventArgs<bool>(args.DeviceOnLine));
+            }
+        }
+
+        private void avSwitch_DMInputChange(Switch device, DMInputEventArgs args)
+        {
+            // Report video sync to event handler
+            EventHandler<GenericEventArgs<uint, bool>> temp = InputVideoSyncEvent;
+            if (temp != null && args.EventId == DMInputEventIds.VideoDetectedEventId)
+            {
+                temp(this,new GenericEventArgs<uint,bool>(args.Number,avSwitch.Inputs[args.Number].VideoDetectedFeedback.BoolValue));
+            }
+        }
+        #endregion
     }
 }

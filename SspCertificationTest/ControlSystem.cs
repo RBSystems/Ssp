@@ -156,21 +156,71 @@ namespace SspCertificationTest
         {
             try
             {
-                string rawConfig = JsonHelper.ReadJsonData(@"\NVRAM\SystemConfig.json");
-                SystemConfiguration configData = JsonHelper.ParseConfigJson(rawConfig);
-
-                AvSwitchController avSwitch = new AvSwitchController(configData.AvSwitcher, this);
-                
-                if (avSwitch.Initialize())
-                {
-                    CrestronConsole.PrintLine("avSwitch successfully initialized.");
-                    avSwitch.ClearAllRoutes();
-                }
+                TestAvSwitch();
             }
             catch (Exception e)
             {
                 ErrorLog.Error("Exception in DoWork: {0} -- {1}", e.Message, e.StackTrace);
             }
+        }
+
+        #region Test Methods
+        private void TestAvSwitch()
+        {
+            string rawConfig = JsonHelper.ReadJsonData(@"\NVRAM\SystemConfig.json");
+            SystemConfiguration configData = JsonHelper.ParseConfigJson(rawConfig);
+
+            AvSwitchController avSwitch = new AvSwitchController(configData.AvSwitcher, this);
+
+            if (avSwitch.Initialize())
+            {
+                CrestronConsole.PrintLine("avSwitch successfully initialized.");
+                avSwitch.DeviceOnlineStatusEvent += new EventHandler<SspCertificationTest.Utilities.GenericEventArgs<bool>>(avSwitch_DeviceOnlineStatusEvent);
+                avSwitch.AudioOutputSourceChangeEvent += new EventHandler<SspCertificationTest.Utilities.GenericEventArgs<uint, uint>>(avSwitch_AudioOutputSourceChangeEvent);
+                avSwitch.VideoOutputSourceChangeEvent += new EventHandler<SspCertificationTest.Utilities.GenericEventArgs<uint, uint>>(avSwitch_VideoOutputSourceChangeEvent);
+                avSwitch.InputVideoSyncEvent += new EventHandler<SspCertificationTest.Utilities.GenericEventArgs<uint, bool>>(avSwitch_InputVideoSyncEvent);
+
+                CrestronConsole.PrintLine("Result of build:");
+                CrestronConsole.PrintLine("Switch type: {0}", avSwitch.SwitchType);
+                CrestronConsole.PrintLine("Number of inputs: {0}", avSwitch.NumInputs);
+                CrestronConsole.PrintLine("Number of outputs: {0}", avSwitch.NumOutputs);
+                CrestronConsole.PrintLine("Online status: {0}", avSwitch.Online);
+                CrestronConsole.PrintLine("GUID: {0}", avSwitch.GUID);
+
+                CrestronCollection<ComPort> rmcCom = avSwitch.GetEndpointComports(1);
+                CrestronConsole.PrintLine("Output 1 com ports:");
+                foreach (var c in rmcCom)
+                {
+                    CrestronConsole.PrintLine("\tIs registered: {0}", c.Registered);
+                    CrestronConsole.PrintLine("\tBaud: {0}", c.BaudRate);
+                    CrestronConsole.PrintLine("\tProtocol: {0}", c.Protocol);
+                }
+
+                CrestronConsole.PrintLine(string.Empty);
+                avSwitch.Route(1, 1);
+                CrestronConsole.PrintLine("result of route(): out {0} -- A{1} V{2}", avSwitch.GetCurrentAudioRoute(1), avSwitch.GetCurrentAudioRoute(1));
+            }
+        }
+        #endregion
+
+        void avSwitch_InputVideoSyncEvent(object sender, SspCertificationTest.Utilities.GenericEventArgs<uint, bool> e)
+        {
+            CrestronConsole.PrintLine("Input video sync event: {0} - {1}", e.Target, e.Value);
+        }
+
+        void avSwitch_VideoOutputSourceChangeEvent(object sender, SspCertificationTest.Utilities.GenericEventArgs<uint, uint> e)
+        {
+            CrestronConsole.PrintLine("Input output change event: {0} - {1}", e.Target, e.Value);
+        }
+
+        void avSwitch_AudioOutputSourceChangeEvent(object sender, SspCertificationTest.Utilities.GenericEventArgs<uint, uint> e)
+        {
+            CrestronConsole.PrintLine("audio output change event: {0} - {1}", e.Target, e.Value);
+        }
+
+        void avSwitch_DeviceOnlineStatusEvent(object sender, SspCertificationTest.Utilities.GenericEventArgs<bool> e)
+        {
+            CrestronConsole.PrintLine("Device online/offline event: {0}", e.Value);
         }
     }
 }
