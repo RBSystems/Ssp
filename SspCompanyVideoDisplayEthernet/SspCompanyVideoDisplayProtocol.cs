@@ -7,11 +7,12 @@ using Crestron.Display;
 using Crestron.ThirdPartyCommon.StandardCommands;
 using Crestron.ThirdPartyCommon.Transports;
 
-namespace SspCompanyVideoDisplayTcp
+namespace SspCompanyVideoDisplayEthernet
 {
     public class SspCompanyVideoDisplayProtocol : ADisplayProtocol
     {
-        public SspCompanyVideoDisplayProtocol(ISerialTransport transport, byte ID) : base(transport, ID)
+        public SspCompanyVideoDisplayProtocol(ISerialTransport transport, byte ID)
+            : base(transport, ID)
         {
             // Set response validation object
             ResponseValidation = new ResponseValidator(ValidatedData);

@@ -92,7 +92,7 @@
       "Type": "Cable Box",
       "ClassName": "Sources.CableBox.CableBox",
       "SwitcherInput": 1,
-      "GuId": 12
+      "GuId": "{F13D7C06-8823-4b12-B157-C59E471227E8}"
     },
     {
       "Name": "Video Player",
@@ -100,7 +100,7 @@
       "Library": "Sources.dll",
       "ClassName": "Sources.VideoPlayer.VideoPlayer",
       "SwitcherInput": 2,
-      "GuId": 13
+      "GuId": "{F13D7C06-8823-4a12-B157-C57D471227E8}"
     },
     {
       "Name": "Video Conference",
@@ -108,7 +108,7 @@
       "Library": "Sources.dll",
       "ClassName": "Sources.Codec.CodecDriver",
       "SwitcherInput": 3,
-      "GuId": 14
+      "GuId": "{F13D7C06-8823-4a12-B157-C59E471327E8}"
     }
   ],
   "Touchscreens": [

@@ -66,7 +66,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\ProgramData\Crestron\SDK\SSPDevices\Crestron.SimplSharpPro.UI.dll</HintPath>
     </Reference>
+    <Reference Include="Display, Version=1.0.0.23969, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="mscorlib" />
+    <Reference Include="ProTransports, Version=1.0.0.20027, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="SimplSharpCustomAttributesInterface, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1099c178b3b54c3b, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\ProgramData\Crestron\SDK\SimplSharpCustomAttributesInterface.dll</HintPath>
@@ -87,9 +89,18 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\ProgramData\Crestron\SDK\SimplSharpReflectionInterface.dll</HintPath>
     </Reference>
+    <Reference Include="SspCompanyVideoDisplayCom, Version=1.0.0.17683, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\SspCompanyVideoDisplays\bin\Debug\SspCompanyVideoDisplayCom.dll</HintPath>
+    </Reference>
+    <Reference Include="SspCompanyVideoDisplayEthernet, Version=1.0.0.18410, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\SspCompanyVideoDisplayEthernet\bin\Debug\SspCompanyVideoDisplayEthernet.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="ThirdPartyCommon, Version=1.0.0.20026, Culture=neutral, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AvSwitchControl\AvSwitchController.cs" />
@@ -98,15 +109,29 @@
     <Compile Include="Configuration\SystemConfiguration.cs" />
     <Compile Include="ControlSystem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sources\Codec\CodecData.cs" />
+    <Compile Include="Sources\Codec\IVtcCodec.cs" />
+    <Compile Include="Sources\Codec\SshVtcCodec.cs" />
+    <Compile Include="Sources\SourceControlData.cs" />
     <Compile Include="Utilities\GenericEventArgs.cs" />
+    <Compile Include="Utilities\SshClientControl.cs" />
     <None Include="Configuration\Data\ScheduledEvents.json" />
     <None Include="Configuration\Data\SystemConfig.json" />
     <None Include="Properties\ControlSystem.cfg" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Configuration\Data\Libraries\CableBox.dll" />
+    <Content Include="Configuration\Data\Libraries\Display.dll" />
+    <Content Include="Configuration\Data\Libraries\IrCableBox.dll" />
+    <Content Include="Configuration\Data\Libraries\IrDisplay.dll" />
+    <Content Include="Configuration\Data\Libraries\IrVideoServer.dll" />
+    <Content Include="Configuration\Data\Libraries\ProTransports.dll" />
+    <Content Include="Configuration\Data\Libraries\ThirdPartyCommon.dll" />
+    <Content Include="Configuration\Data\Libraries\VideoServer.dll" />
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="Displays\" />
     <Folder Include="ScheduleControl\" />
-    <Folder Include="Sources\" />
     <Folder Include="UiControl\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />

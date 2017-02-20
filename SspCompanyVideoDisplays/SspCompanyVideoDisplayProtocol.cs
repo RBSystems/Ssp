@@ -7,7 +7,7 @@ using Crestron.Display;
 using Crestron.ThirdPartyCommon.StandardCommands;
 using Crestron.ThirdPartyCommon.Transports;
 
-namespace SspCompanyVideoDisplayComport
+namespace SspCompanyVideoDisplayCom
 {
     public class SspCompanyVideoDisplayProtocol : ADisplayProtocol
     {

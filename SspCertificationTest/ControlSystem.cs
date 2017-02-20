@@ -8,11 +8,20 @@ using Crestron.SimplSharpPro.Gateways;
 using Crestron.SimplSharpPro.Lighting;
 using SspCertificationTest.Configuration;               // JSON parsing helpers for system setup
 using SspCertificationTest.AvSwitchControl;
+using Crestron.ThirdPartyCommon.Interfaces;
+using System.Collections.Generic;
+using ProTransports;
+using SspCompanyVideoDisplayCom;
+using SspCompanyVideoDisplayEthernet;
 
 namespace SspCertificationTest
 {
     public class ControlSystem : CrestronControlSystem
     {
+        public const string CONFIG_PATH = @"\NVRAM\SystemConfig.json";
+        public AvSwitchController AvMatrix;
+        public List<IBasicVideoDisplay> Displays;
+
         /// <summary>
         /// ControlSystem Constructor. Starting point for the SIMPL#Pro program.
         /// Use the constructor to:
@@ -39,6 +48,7 @@ namespace SspCertificationTest
                 CrestronEnvironment.EthernetEventHandler += new EthernetEventHandler(ControlSystem_ControllerEthernetEventHandler);
 
                 CrestronConsole.AddNewConsoleCommand(DoWork, "DoWork", "Run test method", ConsoleAccessLevelEnum.AccessOperator);
+                Displays = new List<IBasicVideoDisplay>();
             }
             catch (Exception e)
             {
@@ -156,7 +166,7 @@ namespace SspCertificationTest
         {
             try
             {
-                TestAvSwitch();
+                TestIpDisplay();
             }
             catch (Exception e)
             {
@@ -200,6 +210,82 @@ namespace SspCertificationTest
                 avSwitch.Route(1, 1);
                 CrestronConsole.PrintLine("result of route(): out {0} -- A{1} V{2}", avSwitch.GetCurrentAudioRoute(1), avSwitch.GetCurrentAudioRoute(1));
             }
+        }
+
+        private void TestComDisplay()
+        {
+            CrestronConsole.PrintLine("Running RS-232 display tests...");
+
+            // Check display connection point. If 0 -> control system, otherwise AV Switcher
+            ComPort displayPort = this.ComPorts[1];
+
+            // if comport is not registered, register it
+            if (!displayPort.Registered)
+            {
+                if (displayPort.Register() != eDeviceRegistrationUnRegistrationResponse.Success)
+                {
+                    ErrorLog.Error("Failed to register comport {0} -- {1}", 1, displayPort.DeviceRegistrationFailureReason);
+                }
+            }
+
+            // Create new SerialTransport object passing target ComPort as constructor argument
+            SerialTransport transport = new SerialTransport(displayPort);
+            SspCompanyVideoDisplayComport d = new SspCompanyVideoDisplayComport();
+            transport.SetComPortSpec(((ISerialComport)d).ComSpec);
+            ((ISerialComport)d).Initialize(transport);
+            d.StateChangeEvent += new Action<DisplayStateObjects, IBasicVideoDisplay, byte>(StateChangeEvent);
+            Displays.Add(d);
+
+            ((ISerialComport)d).Connect();
+            CrestronConsole.PrintLine("Connection status: {0}", d.Connected);
+            d.SetVolume(10);
+            d.SetInputSource(Crestron.ThirdPartyCommon.Class.VideoConnections.Hdmi1);
+            CrestronConsole.PrintLine("Connection status: {0}", d.Connected);
+            
+        }
+
+        private void TestIpDisplay()
+        {
+            IPAddress addr = IPAddress.Parse("127.0.0.2");
+            int port = 49175;
+
+            SspCompanyVideoDisplayTcp disp = new SspCompanyVideoDisplayTcp();
+            disp.Initialize(addr, port);
+            disp.RxOut += new Action<string>(disp_RxOut);
+            disp.StateChangeEvent += new Action<DisplayStateObjects, IBasicVideoDisplay, byte>(StateChangeEvent);
+
+            disp.Connect();
+            disp.PowerOn();
+        }
+
+        void StateChangeEvent(DisplayStateObjects arg1, IBasicVideoDisplay arg2, byte arg3)
+        {
+            switch (arg1)
+            {
+                case DisplayStateObjects.Audio:
+                    CrestronConsole.PrintLine("Audio RX Event.");
+                    break;
+                case DisplayStateObjects.Connection:
+                    CrestronConsole.PrintLine("Connection RX Event.");
+                    break;
+                case DisplayStateObjects.Input:
+                    CrestronConsole.PrintLine("input RX Event.");
+                    break;
+                case DisplayStateObjects.LampHours:
+                    CrestronConsole.PrintLine("lamp hour RX Event.");
+                    break;
+                case DisplayStateObjects.Power:
+                    CrestronConsole.PrintLine("power RX Event.");
+                    break;
+                default:
+                    CrestronConsole.PrintLine("unknown RX Event.");
+                    break;
+            }
+        }
+
+        void disp_RxOut(string obj)
+        {
+            CrestronConsole.PrintLine("RX Out: {0}", obj);
         }
         #endregion
 

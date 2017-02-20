@@ -9,7 +9,7 @@ using Crestron.ThirdPartyCommon.Transports;
 using Newtonsoft.Json;
 using Crestron.Display;
 
-namespace SspCompanyVideoDisplayTcp
+namespace SspCompanyVideoDisplayEthernet
 {
     public class SspCompanyVideoDisplayTcp : SspCompanyVideoDisplay, ITcp
     {
@@ -19,9 +19,15 @@ namespace SspCompanyVideoDisplayTcp
         private bool InternalSupportsReconnect;
         public override bool SupportsReconnect { get { return InternalSupportsReconnect; } }
 
+        public int Port { get; private set; }
+
+        protected bool EnableAutoReconnect;
         private SimplTransport transport;
 
-        public SspCompanyVideoDisplayTcp() {}
+        public SspCompanyVideoDisplayTcp()
+        {
+            LoadComSettings();    
+        }
 
         public void Initialize(IPAddress ipAddress, int port)
         {
@@ -30,6 +36,7 @@ namespace SspCompanyVideoDisplayTcp
 
             TcpTransport tcpTransport = new TcpTransport
             {
+                EnableAutoReconnect = EnableAutoReconnect,
                 EnableLogging = InternalEnableLogging,
                 CustomLogger = InternalCustomLogger,
                 EnableRxDebug = InternalEnableRxDebug,
@@ -39,9 +46,11 @@ namespace SspCompanyVideoDisplayTcp
             ConnectionTransport = tcpTransport;
 
             DisplayProtocol = new SspCompanyVideoDisplayProtocol(ConnectionTransport, Id);
+            DisplayProtocol.EnableLogging = InternalEnableLogging;
+            DisplayProtocol.CustomLogger = InternalCustomLogger;
             DisplayProtocol.StateChange += StateChange;
             DisplayProtocol.RxOut += SendRxOut;
-            DisplayProtocol.Initialize(DriverData);
+            DisplayProtocol.LoadDriver(DataFile);
         }
 
         public SimplTransport Initialize(Action<string, object[]> send)
@@ -53,10 +62,26 @@ namespace SspCompanyVideoDisplayTcp
 
             ConnectionTransport = transport;
             DisplayProtocol = new SspCompanyVideoDisplayProtocol(ConnectionTransport, Id);
+            DisplayProtocol.EnableLogging = InternalEnableLogging;
+            DisplayProtocol.CustomLogger = InternalCustomLogger;
             DisplayProtocol.StateChange += StateChange;
             DisplayProtocol.RxOut += SendRxOut;
-            DisplayProtocol.Initialize(DriverData);
+            DisplayProtocol.LoadDriver(DataFile);
             return transport;
+        }
+
+        public void LoadComSettings()
+        {
+            var json = DataFile;
+            var driverData = JsonConvert.DeserializeObject<RootObject>(json);
+            if (driverData != null)
+            {
+                if (driverData.CrestronSerialDeviceApi != null)
+                {
+                    Port = driverData.CrestronSerialDeviceApi.Api.Communication.Port;
+                    EnableAutoReconnect = driverData.CrestronSerialDeviceApi.Api.Communication.EnableAutoReconnect;
+                }
+            }
         }
     }
 }

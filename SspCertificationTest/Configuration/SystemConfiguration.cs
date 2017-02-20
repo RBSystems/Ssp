@@ -103,7 +103,7 @@ namespace SspCertificationTest.Configuration
         public string Type { get; set; }
         public string ClassName { get; set; }
         public int SwitcherInput { get; set; }
-        public int GuId { get; set; }
+        public string GuId { get; set; }
     }
 
     /// <summary>

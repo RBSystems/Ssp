@@ -7,8 +7,8 @@
     <ProjectGuid>{2C7F1297-0060-41C0-B944-9A668776B570}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SspCompanyVideoDisplayComport</RootNamespace>
-    <AssemblyName>SspCompanyVideoDisplayComport</AssemblyName>
+    <RootNamespace>SspCompanyVideoDisplayCom</RootNamespace>
+    <AssemblyName>SspCompanyVideoDisplayCom</AssemblyName>
     <ProjectTypeGuids>{0B4745B0-194B-4BB6-8E21-E9057CA92300};{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PlatformFamilyName>WindowsCE</PlatformFamilyName>
     <PlatformID>E2BECB1F-8C8C-41ba-B736-9BE7D946A398</PlatformID>
@@ -46,14 +46,14 @@
     <GenerateSerializationAssemblies>off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Display, Version=1.0.0.27504, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Display, Version=1.0.0.23969, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\SIMPL\DynamicDriverDLL\Display.dll</HintPath>
+      <HintPath>..\SspCertificationTest\Configuration\Data\Libraries\Display.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
-    <Reference Include="ProTransports, Version=1.0.0.27651, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ProTransports, Version=1.0.0.20027, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\SIMPL\DynamicDriverDLL\ProTransports.dll</HintPath>
+      <HintPath>..\SspCertificationTest\Configuration\Data\Libraries\ProTransports.dll</HintPath>
     </Reference>
     <Reference Include="SimplSharpCustomAttributesInterface, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1099c178b3b54c3b, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -77,9 +77,9 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
-    <Reference Include="ThirdPartyCommon, Version=1.0.0.27650, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ThirdPartyCommon, Version=1.0.0.20026, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\SIMPL\DynamicDriverDLL\ThirdPartyCommon.dll</HintPath>
+      <HintPath>..\SspCertificationTest\Configuration\Data\Libraries\ThirdPartyCommon.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

@@ -46,14 +46,14 @@
     <GenerateSerializationAssemblies>off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Display, Version=1.0.0.27504, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Display, Version=1.0.0.23969, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\SIMPL\DynamicDriverDLL\Display.dll</HintPath>
+      <HintPath>..\SspCertificationTest\Configuration\Data\Libraries\Display.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
-    <Reference Include="ProTransports, Version=1.0.0.27651, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ProTransports, Version=1.0.0.20027, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\SIMPL\DynamicDriverDLL\ProTransports.dll</HintPath>
+      <HintPath>..\SspCertificationTest\Configuration\Data\Libraries\ProTransports.dll</HintPath>
     </Reference>
     <Reference Include="SimplSharpCustomAttributesInterface, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1099c178b3b54c3b, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -77,9 +77,9 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
-    <Reference Include="ThirdPartyCommon, Version=1.0.0.27650, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ThirdPartyCommon, Version=1.0.0.20026, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\SIMPL\DynamicDriverDLL\ThirdPartyCommon.dll</HintPath>
+      <HintPath>..\SspCertificationTest\Configuration\Data\Libraries\ThirdPartyCommon.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
