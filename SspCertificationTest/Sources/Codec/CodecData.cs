@@ -6,6 +6,9 @@ using Crestron.SimplSharp;
 
 namespace SspCertificationTest.Sources.Codec
 {
+    /// <summary>
+    /// Identifies the current state of the VTC Codec device.
+    /// </summary>
     public enum eCallState
     {
         Idle,
@@ -16,6 +19,9 @@ namespace SspCertificationTest.Sources.Codec
         HangingUp
     }
 
+    /// <summary>
+    /// Currently supported commands recognized by the VTC Codec
+    /// </summary>
     public enum eCodecCommand
     {
         Unused,

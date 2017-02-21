@@ -8,17 +8,49 @@ using SspCertificationTest.Utilities;
 
 namespace SspCertificationTest.Sources.Codec
 {
+    /// <summary>
+    /// SSH implementation of the IVtcCodec interface. Uses an SSH client to connect to the hardware.
+    /// NOTE: the Initialize() method must be run before any methods can be called.
+    /// </summary>
     public class SshVtcCodec : IVtcCodec
     {
+        /// <summary>
+        /// Triggered when the call state of the codec changes, either from an incoming call
+        /// or when the user begins a call.
+        /// </summary>
         public event EventHandler<GenericEventArgs<eCallState>> CallEvent;
+        /// <summary>
+        /// Triggered when the internal SSH client connects or disconnects from the codec device
+        /// </summary>
         public event EventHandler<GenericEventArgs<bool>> DeviceOnlineEvent;
 
+        /// <summary>
+        /// The current activity state of the codec.
+        /// </summary>
         public eCallState CallState { get; private set; }
+        /// <summary>
+        /// TRUE = local mic mute, FALSE = local mic active
+        /// </summary>
         public bool PrivacyOn { get; set; }
-        public string Make { get; set; }
+        /// <summary>
+        /// The manufacturer's company name
+        /// </summary>
+        public string Manufacturer { get; set; }
+        /// <summary>
+        /// Device model number/name
+        /// </summary>
         public string Model { get; set; }
+        /// <summary>
+        /// TRUE = SSH client is connected to device, FALSE = disconnected
+        /// </summary>
         public bool Connected { get; private set; }
+        /// <summary>
+        /// The unique fuision ID used to remotely manage the device
+        /// </summary>
         public Guid GUID { get; private set; }
+        /// <summary>
+        /// TRUE = user has run the Initialize() method. False otherwise
+        /// </summary>
         public bool IsInitialized { get; private set; }
 
         private SshClientControl clientControl;
@@ -26,6 +58,10 @@ namespace SspCertificationTest.Sources.Codec
         private string numberToDial;
         private eCallState currentState;
 
+        /// <summary>
+        /// Assign internal properties to default values and prepare for initialization.
+        /// </summary>
+        /// <param name="codecData">the data object created when parsing a JSON config file.</param>
         public SshVtcCodec(Source codecData)
         {
             this.codecData = codecData;

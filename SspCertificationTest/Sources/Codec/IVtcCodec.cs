@@ -10,7 +10,7 @@ namespace SspCertificationTest.Sources.Codec
     {
         public eCallState CallState { get; }
         public bool PrivacyOn { get; set; }
-        public string Make { get; }
+        public string Manufacturer { get; }
         public string Model { get; }
 
         public bool RecallPreset(int presetNum);

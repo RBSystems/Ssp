@@ -6,6 +6,9 @@ using Crestron.SimplSharp;
 
 namespace SspCertificationTest.Sources
 {
+    /// <summary>
+    /// General PTZ control commands Enum.
+    /// </summary>
     public enum eDpadButton
     {
         Unused,
