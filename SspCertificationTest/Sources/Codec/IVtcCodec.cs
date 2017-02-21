@@ -8,16 +8,16 @@ namespace SspCertificationTest.Sources.Codec
 {
     public interface IVtcCodec
     {
-        public eCallState CallState { get; }
-        public bool PrivacyOn { get; set; }
-        public string Manufacturer { get; }
-        public string Model { get; }
+        eCallState CallState { get; }
+        bool PrivacyOn { get; set; }
+        string Manufacturer { get; }
+        string Model { get; }
 
-        public bool RecallPreset(int presetNum);
-        public void EnterRemoteNumber(string host);
-        public void BeginCall();
-        public void HangUp();
-        public void RespondToIncomingCall(bool response);
-        public void AdjustCamera(eDpadButton cmd);
+        void RecallPreset(int presetNum);
+        void EnterRemoteNumber(string host);
+        void BeginCall();
+        void HangUp();
+        void RespondToIncomingCall(bool response);
+        void AdjustCamera(eDpadButton cmd);
     }
 }

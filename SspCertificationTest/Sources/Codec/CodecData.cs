@@ -14,7 +14,7 @@ namespace SspCertificationTest.Sources.Codec
         Idle,
         InCall,
         Dialing,
-        IncommingCall,
+        IncomingCall,
         NotConnected,
         HangingUp
     }

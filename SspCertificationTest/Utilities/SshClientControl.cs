@@ -7,17 +7,25 @@ using Crestron.SimplSharp.Ssh;
 
 namespace SspCertificationTest.Utilities
 {
-    public class SshClientControl
+    public class SshClientControl : IDisposable
     {
         public event EventHandler<GenericEventArgs<string>> RxEvent;
 
         private SshClient client;
         private ShellStream comStream;
         private CrestronQueue<string> cmdQueue;
+        private bool disposed;
 
         public SshClientControl()
         {
+            disposed = false;
+            cmdQueue = new CrestronQueue<string>();
             CrestronInvoke.BeginInvoke(ProcessResponse);
+        }
+
+        ~SshClientControl()
+        {
+            Dispose(false);
         }
 
         public bool Connect(string host, int port, string userName, string password)
@@ -32,14 +40,14 @@ namespace SspCertificationTest.Utilities
 
                 try
                 {
-                    comStream = client.CreateShellStream("VtcStream", 30, 24, 800, 600, 1024);
+                    comStream = client.CreateShellStream("terminal", 80, 24, 800, 600, 1024);
                     comStream.DataReceived += new EventHandler<Crestron.SimplSharp.Ssh.Common.ShellDataEventArgs>(comStream_DataReceived);
+                    return true;
                 }
                 catch (Exception e)
                 {
                     ErrorLog.Error("Failed to create Tx/Rx stream: {0} -- {1}", e.Message, e.StackTrace);
                 }
-
             }
             catch (Exception e)
             {
@@ -80,6 +88,29 @@ namespace SspCertificationTest.Utilities
             return false;
         }
 
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+
+            if (client.IsConnected)
+                client.Disconnect();
+
+            if (disposing)
+            {
+                // Free managed resources
+                comStream.Dispose();
+                client.Dispose();
+                cmdQueue.Dispose();
+            }
+            disposed = true;
+        }
+
         private void ProcessResponse(object obj)
         {
             string rxString = string.Empty;
@@ -97,7 +128,7 @@ namespace SspCertificationTest.Utilities
             }
         }
 
-        void comStream_DataReceived(object sender, Crestron.SimplSharp.Ssh.Common.ShellDataEventArgs e)
+        private void comStream_DataReceived(object sender, Crestron.SimplSharp.Ssh.Common.ShellDataEventArgs e)
         {
             StringBuilder rxBuilder = new StringBuilder();
             var stream = (ShellStream)sender;

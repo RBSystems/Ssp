@@ -91,6 +91,11 @@
       "Library": "Sources.dll",
       "Type": "Cable Box",
       "ClassName": "Sources.CableBox.CableBox",
+      "ComProtocol": "IR",
+      "Port": 1,
+      "ComHostname": "",
+      "ComUsername": "",
+      "ComPassword": "",
       "SwitcherInput": 1,
       "GuId": "{F13D7C06-8823-4b12-B157-C59E471227E8}"
     },
@@ -99,6 +104,11 @@
       "Type": "Video PLayer",
       "Library": "Sources.dll",
       "ClassName": "Sources.VideoPlayer.VideoPlayer",
+      "ComProtocol": "TcpIp",
+      "Port": 80,
+      "ComHostname": "VideoPlayerHost",
+      "ComUsername": "",
+      "ComPassword": "",
       "SwitcherInput": 2,
       "GuId": "{F13D7C06-8823-4a12-B157-C57D471227E8}"
     },
@@ -107,6 +117,11 @@
       "Type": "Video Codec",
       "Library": "Sources.dll",
       "ClassName": "Sources.Codec.CodecDriver",
+      "ComProtocol": "SSH",
+      "Port": 91453,
+      "ComHostname": "VtcCodecDevice",
+      "ComUsername": "USERNAME",
+      "ComPassword": "PASSWORD",
       "SwitcherInput": 3,
       "GuId": "{F13D7C06-8823-4a12-B157-C59E471327E8}"
     }

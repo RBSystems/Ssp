@@ -102,6 +102,11 @@ namespace SspCertificationTest.Configuration
         public string Library { get; set; }
         public string Type { get; set; }
         public string ClassName { get; set; }
+        public string ComProtocol { get; set; }
+        public int Port { get; set; }
+        public string ComHostname { get; set; }
+        public string ComUsername { get; set; }
+        public string ComPassword { get; set; }
         public int SwitcherInput { get; set; }
         public string GuId { get; set; }
     }

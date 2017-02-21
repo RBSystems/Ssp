@@ -13,6 +13,8 @@ using System.Collections.Generic;
 using ProTransports;
 using SspCompanyVideoDisplayCom;
 using SspCompanyVideoDisplayEthernet;
+using SspCertificationTest.Utilities;
+using System.Text.RegularExpressions;
 
 namespace SspCertificationTest
 {
@@ -166,7 +168,7 @@ namespace SspCertificationTest
         {
             try
             {
-                TestIpDisplay();
+                TestSshClient();
             }
             catch (Exception e)
             {
@@ -258,6 +260,45 @@ namespace SspCertificationTest
             disp.PowerOn();
         }
 
+        private void TestSshClient()
+        {
+            SshClientControl client = new SshClientControl();
+            client.RxEvent += client_RxEvent;
+            if (client.Connect("r-a104d-dmps3.mesa.gmu.edu", 22, "admin", "Mason1972"))
+            {
+                CrestronConsole.PrintLine("Connected!");
+                client.SendCommand("ver -v\r\n");
+            }
+        }
+
+        void client_RxEvent(object sender, GenericEventArgs<string> e)
+        {
+            CrestronConsole.PrintLine(e.Value);
+            ((SshClientControl)sender).Disconnect();
+        }
+        #endregion
+
+        #region Event Handlers
+        void avSwitch_InputVideoSyncEvent(object sender, SspCertificationTest.Utilities.GenericEventArgs<uint, bool> e)
+        {
+            CrestronConsole.PrintLine("Input video sync event: {0} - {1}", e.Target, e.Value);
+        }
+
+        void avSwitch_VideoOutputSourceChangeEvent(object sender, SspCertificationTest.Utilities.GenericEventArgs<uint, uint> e)
+        {
+            CrestronConsole.PrintLine("Input output change event: {0} - {1}", e.Target, e.Value);
+        }
+
+        void avSwitch_AudioOutputSourceChangeEvent(object sender, SspCertificationTest.Utilities.GenericEventArgs<uint, uint> e)
+        {
+            CrestronConsole.PrintLine("audio output change event: {0} - {1}", e.Target, e.Value);
+        }
+
+        void avSwitch_DeviceOnlineStatusEvent(object sender, SspCertificationTest.Utilities.GenericEventArgs<bool> e)
+        {
+            CrestronConsole.PrintLine("Device online/offline event: {0}", e.Value);
+        }
+        
         void StateChangeEvent(DisplayStateObjects arg1, IBasicVideoDisplay arg2, byte arg3)
         {
             switch (arg1)
@@ -288,25 +329,5 @@ namespace SspCertificationTest
             CrestronConsole.PrintLine("RX Out: {0}", obj);
         }
         #endregion
-
-        void avSwitch_InputVideoSyncEvent(object sender, SspCertificationTest.Utilities.GenericEventArgs<uint, bool> e)
-        {
-            CrestronConsole.PrintLine("Input video sync event: {0} - {1}", e.Target, e.Value);
-        }
-
-        void avSwitch_VideoOutputSourceChangeEvent(object sender, SspCertificationTest.Utilities.GenericEventArgs<uint, uint> e)
-        {
-            CrestronConsole.PrintLine("Input output change event: {0} - {1}", e.Target, e.Value);
-        }
-
-        void avSwitch_AudioOutputSourceChangeEvent(object sender, SspCertificationTest.Utilities.GenericEventArgs<uint, uint> e)
-        {
-            CrestronConsole.PrintLine("audio output change event: {0} - {1}", e.Target, e.Value);
-        }
-
-        void avSwitch_DeviceOnlineStatusEvent(object sender, SspCertificationTest.Utilities.GenericEventArgs<bool> e)
-        {
-            CrestronConsole.PrintLine("Device online/offline event: {0}", e.Value);
-        }
     }
 }
